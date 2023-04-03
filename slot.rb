@@ -1,18 +1,17 @@
 require "date"
 
 class Slot
-    def initialize(slotNo, carNo)
-        @slotNo = slotNo
-        @carNo = carNo
-        @entryTime = DateTime.now
-    end
+  def initialize(slotNo, carNo)
+    @slotNo = slotNo
+    @carNo = carNo
+    @entryTime = DateTime.now
+  end
 
-    def getSlot()
-        slot = {
-            :slotNo => @slotNo,
-            :carNo => @carNo,
-            :entryTime => @entryTime
-        }
-        return slot
-    end
+  def getSlot()
+    {
+      "slotNo" => @slotNo,
+      "carNo" => @carNo,
+      "entryTime" => @entryTime,
+    }
+  end
 end
