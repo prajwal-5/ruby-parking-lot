@@ -11,13 +11,17 @@ class InvoiceManager
     @invoices.empty?
   end
 
-  def generateInvoice(car)
-    invoice = Invoice.new(car, @invoices.length)
-    File.delete(@file)
-    @file = File.open("invoice.json", "a+")
-    @invoices.push(invoice.getInvoice)
-    @file.write(@invoices.to_json)
+  def updateFile(fileName, data)
     @file.close
+    @file = File.open(fileName, "w+")
+    @file.write(data.to_json)
+    @file.close
+  end
+
+  def generateInvoice(slot)
+    invoice = Invoice.new(slot, @invoices.length)
+    @invoices.push(invoice.getInvoice)
+    updateFile("invoice.json", @invoices)
   end
 
   def allInvoices
@@ -26,5 +30,11 @@ class InvoiceManager
 
   def findInvoice(invoiceID)
     @invoices.find { |invoice| invoice["invoiceId"] == invoiceID.to_i } || false
+  end
+
+  def deleteInvoice(delInvoice)
+    @invoices = @invoices.find_all { |invoice| invoice != delInvoice }
+    updateFile("invoice.json", @invoices)
+    true
   end
 end

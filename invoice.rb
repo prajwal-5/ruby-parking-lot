@@ -1,9 +1,9 @@
 require "date"
 
 class Invoice
-  def initialize(car, invoiceId)
-    @carNo = car["carNo"]
-    @entryTime = car["entryTime"]
+  def initialize(slot, invoiceId)
+    @carNo = slot["carNo"]
+    @entryTime = slot["entryTime"]
     @exitTime = DateTime.now
     @duration = calcDuration(@entryTime)
     @invoiceAmount = calcAmount(@duration)
@@ -23,17 +23,7 @@ class Invoice
   end
 
   def calcAmount(duration)
-    amount = 0
-    if duration > 60
-      amount = 500
-    elsif duration > 30
-      amount = 300
-    elsif duration > 10
-      amount = 200
-    else
-      amount = 100
-    end
-    amount
+    amount = (duration > 60) ? 500 : (duration > 30) ? 300 : (duration > 10) ? 200 : 100
   end
 
   def getInvoice

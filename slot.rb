@@ -1,9 +1,9 @@
 require "date"
 
 class Slot
-  def initialize(slotNo, carNo)
+  def initialize(slotNo, car)
     @slotNo = slotNo
-    @carNo = carNo
+    @carNo = car.registrationNo
     @entryTime = DateTime.now
   end
 

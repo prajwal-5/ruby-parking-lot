@@ -2,15 +2,13 @@ require "spec_helper"
 require_relative "../car"
 
 describe "Checking Car's" do
-  before(:each) do
-    @car = Car.new("")
-  end
-
   it("invalid registration number") do
-    expect(@car.isValid("KA101010")).to eql false
+    car = Car.new("KA101010")
+    expect(car.isValid).to eql nil
   end
 
   it("valid registration number") do
-    expect(@car.isValid("KA10101010")).to eql true
+    car = Car.new("KA10101010")
+    expect(car.isValid).to eql true
   end
 end

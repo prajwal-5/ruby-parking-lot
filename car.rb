@@ -3,16 +3,14 @@ class Car
     @registrationNo = registrationNo
   end
 
-  def isValid(carNo)
+  def isValid()
     size = 10
-    if carNo.length == size
-      return carNo.match?(/[a-zA-Z]{2}[\d]{8}/)
-    else
-      return false
+    if @registrationNo.length == size
+      return (@registrationNo.match?(/[a-zA-Z]{2}[\d]{8}/))
     end
   end
 
   def registrationNo
-    registrationNo
+    @registrationNo
   end
 end

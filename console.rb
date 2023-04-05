@@ -5,6 +5,10 @@ require_relative "invoice_manager"
 class Console
   def initialize
     @choice = nil
+    @firstChoice = 1
+    @secondChoice = 2
+    @thirdChoice = 3
+    @fourthChoice = 4
   end
 
   def menu
@@ -22,7 +26,9 @@ class Console
   end
 
   def isValid(choice)
-    if choice < 1 || choice > 6
+    minChoice = 1
+    maxChoice = 6
+    if choice < minChoice || choice > maxChoice
       puts("Please choose a valid Option!!")
       return nil
     end
@@ -34,74 +40,79 @@ class Console
   end
 
   def getDetails
-    puts("\nNOTE: Registration Number is of format AANNNNNNNN where N-> Number and A-> Alphabet \nEg. KA10101010, HK10110011 are valid registration Number.\n\n")
-    puts("Enter the Car's Registration Number: ")
-    carNo = gets.chomp
+    loop do
+      puts("\n------------------------------------------------------------------------------------------------------------")
+      puts("NOTE: Registration Number is of format AANNNNNNNN containing 2 alphabets and 8 numbers where \nN-> Number and A-> Alphabet \nEg. KA12345678, HR87654321 are valid registration Number.")
+      puts("------------------------------------------------------------------------------------------------------------\n\n")
+      puts("Enter the Car's Registration Number: ")
+      carNo = gets.chomp
+      car = Car.new(carNo)
+      if car.isValid()
+        return car
+      else
+        puts("\n------------------------------")
+        puts("Invalid Car Number!!!")
+        puts("Press 1 to exit")
+        puts("Press enter to retry")
+        puts("------------------------------\n")
+        choice = gets.chomp.to_i
+        if choice == 1
+          return false
+        end
+      end
+    end
   end
 
   def controller(choice)
-    operation = ParkingLot.new
+    parkingLot = ParkingLot.new
     invoiceManager = InvoiceManager.new
 
-    if (choice == 1)
-      if (operation.isFull?)
+    if (choice == @firstChoice)
+      if (parkingLot.isFull?)
         puts("Parking lot is full !!!")
       else
-        carNo = getDetails
-        car = Car.new(carNo)
-        if car.isValid(carNo)
-          puts("\nCAR PARKED at Slot No #{operation.park(carNo)} !!!")
-        else
-          puts("Invalid Car Number !!!")
+        car = getDetails
+        if car
+          puts("\nCAR PARKED at Slot No #{parkingLot.park(car)} !!!")
         end
       end
-    elsif (choice == 2)
-      if (operation.isEmpty?)
+    elsif (choice == @secondChoice)
+      if (parkingLot.isEmpty?)
         puts("Parking lot is Empty !!!")
-      else
-        carNo = getDetails
-        car = Car.new(carNo)
-        if car.isValid(carNo)
-          searchCar = operation.findCar(carNo)
-          if (searchCar != false)
-            puts("\n\nCAR FOUND !!!")
-            puts("\nYour Car {#{searchCar["carNo"]}} is Parked at Parking Slot - #{searchCar["slotNo"]}\n\n")
-            puts("Press 1 to unpark the car")
-            puts("Press enter to return\n")
-            choice = gets.chomp.to_i
-            if (choice == 1)
-              if (operation.unpark(searchCar))
-                puts("\nUnparked your car !!!\n")
-              else
-                puts("\nSome Error Occured\n")
-              end
-            end
-          else
-            puts("\nCar Not Found !!!\n")
+        return
+      end
+      car = getDetails
+      if car
+        searchCar = parkingLot.findCar(car)
+        if searchCar
+          puts("\n\nCAR FOUND !!!")
+          puts("\nYour Car {#{searchCar["carNo"]}} is Parked at Parking Slot - #{searchCar["slotNo"]}\n\n")
+          puts("Press 1 to unpark the car")
+          puts("Press enter to return\n")
+          choice = gets.chomp.to_i
+          if (choice == @firstChoice)
+            parkingLot.unpark(searchCar)
+            puts("\nUnparked your car !!!\n")
           end
         else
-          puts("\nInvalid Car Number !!!\n")
+          puts("\nCar Not Found !!!\n")
         end
       end
-    elsif (choice == 3)
+    elsif (choice == @thirdChoice)
       if invoiceManager.isEmpty?
         puts("No invoices to show")
       else
         invoices = invoiceManager.allInvoices
-        invoice = 0
         puts("\n\n-----------------------------------------------------------------------")
         puts("ALL INOVICES")
         puts("-----------------------------------------------------------------------\n\n")
-        puts("\tInvoice ID \t Duration \t Amount\n\n")
-        while invoice < invoices.length
-          puts("\t#{invoices[invoice]["invoiceId"]} \t\t #{invoices[invoice]["duration"]} \t\t #{invoices[invoice]["invoiceAmount"]}")
-          invoice += 1
-        end
+        puts("\tInvoice ID \t Amount \t Duration\n\n")
+        invoices.each { |invoice| puts("\t #{invoice["invoiceId"]}  \t\t \u20B9 #{invoice["invoiceAmount"]} \t\t #{invoice["duration"]} seconds") }
         puts("\n-----------------------------------------------------------------------\n\n")
         puts("Press enter to continue!")
         STDIN.getch
       end
-    elsif (choice == 4)
+    elsif (choice == @fourthChoice)
       if (invoiceManager.isEmpty?)
         puts("No Invoices Generated !!!")
       else
@@ -118,27 +129,24 @@ class Console
           puts("\tCar No.:     #{invoice["carNo"]}")
           puts("\tEntry Time:  #{invoice["entryTime"]}")
           puts("\tExit Time:   #{invoice["exitTime"]}")
-          puts("\tDuration:    #{invoice["duration"]}")
-          puts("\tAmout:       #{invoice["invoiceAmount"]}")
+          puts("\tDuration:    #{invoice["duration"]} seconds")
+          puts("\tAmout:       \u20B9 #{invoice["invoiceAmount"]}")
           puts("\n-----------------------------------------------------------------------\n\n")
           puts("Press enter to continue!")
           STDIN.getch
         end
       end
     else
-      if operation.isEmpty?
+      if parkingLot.isEmpty?
         puts("No Cars Parked !!!")
       else
-        parkedCars = operation.allCars
+        parkedCars = parkingLot.allCars
         car = 0
         puts("\n\n-----------------------------------------------------------------------")
         puts("ALL PARKED CARS")
         puts("-----------------------------------------------------------------------\n\n")
         puts("\tParked Cars \t\t Slot No.\n\n")
-        while car < parkedCars.length
-          puts("\t#{parkedCars[car]["carNo"]} \t\t #{parkedCars[car]["slotNo"]}")
-          car += 1
-        end
+        parkedCars.each { |car| puts("\t#{car["carNo"]} \t\t #{car["slotNo"]}") }
         puts("\n-----------------------------------------------------------------------\n\n")
         puts("Press enter to continue!")
         STDIN.getch

@@ -1,14 +1,11 @@
 require "spec_helper"
-require_relative "../parking_lot"
+require_relative "../car"
+require_relative "../slot"
 require_relative "../invoice"
 
 describe "Checking Inovice's" do
   before(:each) do
-    @parkingLot = ParkingLot.new
-    @parkingLot.park("KA10101010")
-    find = @parkingLot.findCar("KA10101010")
-    @invoice = Invoice.new(find, 1)
-    @parkingLot.unpark(find)
+    @invoice = Invoice.new(Slot.new(1, Car.new("KA10101010")).getSlot, 1)
   end
 
   it("duration time") do

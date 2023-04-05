@@ -21,8 +21,8 @@ class ParkingLot
   end
 
   def updateFile(fileName, data)
-    File.delete(@file)
-    @file = File.open(fileName, "a+")
+    @file.close
+    @file = File.open(fileName, "w+")
     @file.write(data.to_json)
     @file.close
   end
@@ -30,43 +30,35 @@ class ParkingLot
   def getSlots(parkedCars)
     hash = {}
     if parkedCars.length > 0
-      count = 0
-      while count < @parkedCars.length
-        hash[parkedCars[count]["slotNo"]] = false
-        count += 1
-      end
+      @parkedCars.each { |car| hash[car["slotNo"]] = false }
     end
     hash
   end
 
-  def park(carNo)
-    car = Car.new(carNo)
-    availableSlot = 0
-    while availableSlot < @size
-      if (!@slotHash[availableSlot] && @slotHash[availableSlot] != nil)
-        availableSlot += 1
-      else
-        break
-      end
-    end
-    emptySlot = Slot.new(availableSlot, carNo)
+  def getAvailableSlot
+    (0...@size).find { |slot| @slotHash[slot] == nil }
+  end
+
+  def park(car)
+    availableSlot = getAvailableSlot
+    emptySlot = Slot.new(availableSlot, car)
     @parkedCars.push(emptySlot.getSlot)
     @slotHash[availableSlot] = false
     updateFile("parking.json", @parkedCars)
     availableSlot
   end
 
-  def unpark(car)
+  def unpark(slot)
     invoice = InvoiceManager.new
-    invoice.generateInvoice(car)
-    @slotHash[car["slotNo"]] = nil
-    @parkedCars = @parkedCars.find_all { |parkCar| parkCar != car }
+    invoice.generateInvoice(slot)
+    @slotHash[slot["slotNo"]] = nil
+    @parkedCars = @parkedCars.find_all { |parkCar| parkCar != slot }
     updateFile("parking.json", @parkedCars)
     true
   end
 
-  def findCar(carNo)
-    @parkedCars.find { |car| car["carNo"] == carNo } || false
+  def findCar(car)
+    @parkedCars.find { |slot| slot["carNo"] == car.registrationNo } || false
   end
 
   def allCars
