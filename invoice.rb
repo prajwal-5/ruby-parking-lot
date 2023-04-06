@@ -23,7 +23,13 @@ class Invoice
   end
 
   def calcAmount(duration)
-    amount = (duration > 60) ? 500 : (duration > 30) ? 300 : (duration > 10) ? 200 : 100
+    priceChart = {
+      0..10 => 100,
+      10..30 => 200,
+      30..60 => 300,
+      60..nil => 500,
+    }
+    priceChart.select { |time| time === duration }.values.first
   end
 
   def getInvoice

@@ -3,12 +3,16 @@ require_relative "parking_lot"
 require_relative "invoice_manager"
 
 class Console
+  PARK_CAR = 1
+  UNPARK_CAR = 1
+  FIND_CAR = 2
+  GET_ALL_INVOICES = 3
+  FIND_INVOICE = 4
+  GET_ALL_PARKED_CARS = 5
+  QUIT = 6
+
   def initialize
     @choice = nil
-    @firstChoice = 1
-    @secondChoice = 2
-    @thirdChoice = 3
-    @fourthChoice = 4
   end
 
   def menu
@@ -67,7 +71,7 @@ class Console
     parkingLot = ParkingLot.new
     invoiceManager = InvoiceManager.new
 
-    if (choice == @firstChoice)
+    if (choice == PARK_CAR)
       if (parkingLot.isFull?)
         puts("Parking lot is full !!!")
       else
@@ -76,7 +80,7 @@ class Console
           puts("\nCAR PARKED at Slot No #{parkingLot.park(car)} !!!")
         end
       end
-    elsif (choice == @secondChoice)
+    elsif (choice == FIND_CAR)
       if (parkingLot.isEmpty?)
         puts("Parking lot is Empty !!!")
         return
@@ -90,7 +94,7 @@ class Console
           puts("Press 1 to unpark the car")
           puts("Press enter to return\n")
           choice = gets.chomp.to_i
-          if (choice == @firstChoice)
+          if (choice == UNPARK_CAR)
             parkingLot.unpark(searchCar)
             puts("\nUnparked your car !!!\n")
           end
@@ -98,7 +102,7 @@ class Console
           puts("\nCar Not Found !!!\n")
         end
       end
-    elsif (choice == @thirdChoice)
+    elsif (choice == GET_ALL_INVOICES)
       if invoiceManager.isEmpty?
         puts("No invoices to show")
       else
@@ -112,7 +116,7 @@ class Console
         puts("Press enter to continue!")
         STDIN.getch
       end
-    elsif (choice == @fourthChoice)
+    elsif (choice == FIND_INVOICE)
       if (invoiceManager.isEmpty?)
         puts("No Invoices Generated !!!")
       else
